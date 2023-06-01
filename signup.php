@@ -1,13 +1,15 @@
 <?php
 
-$sucess=0;
-$user=0;
+$sucess = 0;
+$user = 0;
+$invalid=0;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     include 'connect.php';
 
     $username = $_POST['name'];
     $password = $_POST['pass'];
+    $cpassword = $_POST['cpass'];
     // $sql="insert into registration(username,password) values('$username','$password');";
     // $result=mysqli_query($conn,$sql);
     // if($result){
@@ -22,16 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $num = mysqli_num_rows($result);
         if ($num > 0) {
             // echo "User already Exists";
-            $user=1;
+            $user = 1;
         } else {
-            $sql = "insert into registration(username,password) values('$username','$password');";
-            $result = mysqli_query($conn, $sql);
-            if ($result) {
-                // echo "Signup Successfull ";
-                $sucess=1;
-                header("location:login.php");
-            } else {
-                die(mysqli_error($conn));
+            if ($password == $cpassword) {
+
+                $sql = "insert into registration(username,password) values('$username','$password');";
+                $result = mysqli_query($conn, $sql);
+                if ($result) {
+                    // echo "Signup Successfull ";
+                    $sucess = 1;
+                    // header("location:login.php");
+                } else {
+                    $invalid=1;
+                    // die(mysqli_error($conn));
+                }
             }
         }
     }
@@ -53,28 +59,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
-<?php  
+    <?php
 
-if($user){
-    echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    if ($user) {
+        echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
     <strong>Ohh no Sorry</strong> User already exist
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>';
-}
+    }
 
-?>
+    ?>
 
-<?php  
+    <?php
 
-if($sucess){
-    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+    if ($sucess) {
+        echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
     <strong>Sucess </strong>You are Sucessfully Signed Up!
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>';
+    }
+
+    ?>
+     <?php
+
+if ($invalid) {
+    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+<strong>ohh no sorry</strong>Invalid Credentials
+<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+  <span aria-hidden="true">&times;</span>
+</button>
+</div>';
 }
 
 ?>
@@ -92,6 +110,11 @@ if($sucess){
                 <label for="exampleInputPassword1">Password</label>
                 <input type="text" class="form-control" placeholder="Enter your password" name="pass" autocomplete="off">
             </div>
+            <div class="form-group">
+                <label for="exampleInputPassword1">Confirm Password</label>
+                <input type="text" class="form-control" placeholder="Enter your confirm password" name="cpass" autocomplete="off">
+            </div>
+
 
             <button type="submit" class="btn btn-primary w-100">Signup</button>
         </form>
